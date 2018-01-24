@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TVple free 960 * 540</title>
+    <script src="jquery-3.3.1.min.js"></script>
+    <style>
+        #videoCanvas{
+           opacity:1;
+            background:#00000000;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        #videoPlayer{
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <video id="videoPlayer" width="960" height="540" controls="controls" autoplay="autoplay">
+        <source id="videoPlayerSource" src="141724.mp4" type="video/mp4">
+    </video>
+    <canvas id="videoCanvas" width="960" height="540">
+    </canvas>
+</body>
+    <script>
+        jsonCaptionData = {}
+        $().ready(function () {
+            // SetVideoSource("./543285.mp4")
+            InitVideoEvent()
+            // DrawText()
+        })
+
+        $.getJSON("141724.json", function(json) {
+            jsonCaptionData = json
+        });
+
+        function DrawText(text, position) {
+            var ctx = document.getElementById('videoCanvas').getContext('2d');
+            ctx.font="15px Arial";
+            ctx.fillStyle = '#ECECEB'
+            console.log("pos: " + position + " text: " + text)
+            ctx.fillText(text, position[0], position[1]);
+        }
+        
+        function InitVideoEvent() {
+            $("#videoPlayer").on("timeupdate", function (event) {
+                VideoTimeUpdate(this.currentTime, this.duration)
+            })
+        }
+
+        function ConvertPosition(x, y) {
+            return [x * 960, y * 540]
+        }
+
+        function VideoTimeUpdate(currentTime, duration) {
+            console.log("curr: " + currentTime + " dur: " + duration)
+            currentVideoPlayTime = Math.floor(currentTime)
+
+            ClearCanvas()
+
+            currentTimeCaption = jsonCaptionData["" + currentVideoPlayTime]
+            for(indexOfCaption in currentTimeCaption) {
+                position = ConvertPosition(currentTimeCaption[indexOfCaption]["x"], currentTimeCaption[indexOfCaption]["y"])
+                text = currentTimeCaption[indexOfCaption]["text"]
+                DrawText(text, position)
+            }
+        }
+
+        function ClearCanvas() {
+            var ctx = document.getElementById('videoCanvas').getContext('2d');
+            ctx.clearRect(0, 0, 960, 540)
+        }
+
+        function SetVideoSource(videoPath) {
+            $("#videoPlayerSource").attr("src", videoPath)
+        }
+    </script>
+</html>
