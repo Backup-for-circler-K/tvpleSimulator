@@ -44,9 +44,9 @@
 
         function DrawText(text, position) {
             var ctx = document.getElementById('videoCanvas').getContext('2d');
-            ctx.font="15px Arial";
+            ctx.font="18px Arial";
             ctx.fillStyle = '#ECECEB'
-            console.log("pos: " + position + " text: " + text)
+            // console.log("pos: " + position + " text: " + text)
             ctx.fillText(text, position[0], position[1]);
         }
         
@@ -61,12 +61,19 @@
         }
 
         function VideoTimeUpdate(currentTime, duration) {
-            console.log("curr: " + currentTime + " dur: " + duration)
+            // console.log("curr: " + currentTime + " dur: " + duration)
             currentVideoPlayTime = Math.floor(currentTime)
 
             ClearCanvas()
 
             currentTimeCaption = jsonCaptionData["" + currentVideoPlayTime]
+            for(indexOfCaption in currentTimeCaption) {
+                position = ConvertPosition(currentTimeCaption[indexOfCaption]["x"], currentTimeCaption[indexOfCaption]["y"])
+                text = currentTimeCaption[indexOfCaption]["text"]
+                DrawText(text, position)
+            }
+
+            currentTimeCaption = jsonCaptionData["" + (currentVideoPlayTime + 1)]
             for(indexOfCaption in currentTimeCaption) {
                 position = ConvertPosition(currentTimeCaption[indexOfCaption]["x"], currentTimeCaption[indexOfCaption]["y"])
                 text = currentTimeCaption[indexOfCaption]["text"]
